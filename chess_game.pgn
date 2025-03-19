@@ -1,0 +1,9 @@
+[Event "Friendly Game"]
+[Site "Python Chess App"]
+[Date "2025.03.19"]
+[Round "1"]
+[White "Stockfish"]
+[Black "Mistral Large"]
+[Result "1-0"]
+
+1. e3 e5 2. Be2 Nf6 3. Nc3 Bc5 4. d4 exd4 5. exd4 Bb4 6. Bg5 Bxc3+ 7. bxc3 Nc6 8. Nf3 Nxd4 9. cxd4 Qe7 10. O-O Qxe2 11. Qxe2+ Kf8 12. Rae1 h6 13. Bh4 h5 14. Qe7+ Kg8 15. Ng5 Nh7 16. Qxf7# 1-0

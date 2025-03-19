@@ -1,12 +1,14 @@
 data
+conv_data.tar.gz
 
 package-lock.json
+stockfish
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-
+__pycache__
 # C extensions
 *.so -- we like our plugin sos
 
