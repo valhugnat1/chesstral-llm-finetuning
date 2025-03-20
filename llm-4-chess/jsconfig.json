@@ -1,8 +1,16 @@
 {
   "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "target": "ESNext",
+    "checkJs": true,
+    "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true
   },
+  "include": ["src/**/*", "src/**/*.vue", "env.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

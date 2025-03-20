@@ -5,6 +5,7 @@ import type { BoardApi, BoardConfig } from "vue3-chessboard";
 import { useChatStore } from "../stores/chatStore";
 import { Mistral } from "@mistralai/mistralai";
 import { Chess } from "chess.js";
+import { ref, onMounted } from "vue";
 
 let boardAPI: BoardApi;
 const boardConfig: BoardConfig = {
@@ -70,7 +71,7 @@ async function mistralMovePrediction(
   pgn: string,
   impossibleMoves: Array<string>
 ): Promise<string> {
-  const apiKey = "";
+  const apiKey = import.meta.env.VITE_MISTRAL_API_KEY;
   const client = new Mistral({ apiKey: apiKey });
   var prompt = `You can answer only one of the moves in the following list: \n ${nextMovePossible}\n\nCurrent game in PGN format: ${pgn}\n\nWhat is your next move?\n`;
 
