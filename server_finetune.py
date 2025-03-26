@@ -1,7 +1,7 @@
 from mistral_inference.transformer import Transformer
 from mistral_inference.generate import generate
 from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
-from mistral_common.protocol.instruct.messages import UserMessage
+from mistral_common.protocol.instruct.messages import UserMessage, SystemMessage, AssistantMessage
 from mistral_common.protocol.instruct.request import ChatCompletionRequest
 import time
 from typing import List, Optional, Dict, Any, Union
@@ -12,17 +12,17 @@ import uuid
 app = FastAPI(title="Mistral Local API")
 
 # Initialize Mistral components
-tokenizer = MistralTokenizer.from_file("/content/mistral_models/tokenizer.model.v3")
-model = Transformer.from_folder("/content/mistral_models")
-model.load_lora("/content/test_ultra/checkpoints/checkpoint_000100/consolidated/lora.safetensors")
+tokenizer = MistralTokenizer.from_file("/root/chesstral-llm-finetuning/mistral-finetune/mistral_model/tokenizer.model.v3")
+model = Transformer.from_folder("/root/chesstral-llm-finetuning/mistral-finetune/mistral_model")
+model.load_lora("/root/chesstral-llm-finetuning/mistral-finetune/runs/run2/checkpoints/checkpoint_000300/consolidated/lora.safetensors")
 
 class ChatMessage(BaseModel):
     role: str
     content: str
 
 class ChatCompletionRequest(BaseModel):
-    model: str
     messages: List[ChatMessage]
+    model: Optional[str] = "mistral-finetune"
     temperature: Optional[float] = 0.7
     top_p: Optional[float] = 1.0
     n: Optional[int] = 1
@@ -35,15 +35,17 @@ class ChatCompletionRequest(BaseModel):
 
 @app.post("/chat/completions")
 async def chat_completions(request: ChatCompletionRequest):
-    try:
-        # Convert messages to Mistral format
-        messages = [message.model_dump() for message in request.messages]
+    # try:
+
+        messages = [UserMessage(content=message.content) for message in request.messages]
         print (messages)
-        # messages = [UserMessage(content=message.content) for message in request.messages]
         completion_request = ChatCompletionRequest(messages=messages)
+
+        print (completion_request)
         
         # Generate tokens
         tokens = tokenizer.encode_chat_completion(completion_request).tokens
+        print (tokens)
         out_tokens, _ = generate(
             [tokens], 
             model, 
@@ -80,8 +82,8 @@ async def chat_completions(request: ChatCompletionRequest):
                 "total_tokens": total_tokens
             }
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
 async def root():
@@ -90,3 +92,5 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    
