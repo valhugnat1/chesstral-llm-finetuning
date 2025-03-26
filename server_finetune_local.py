@@ -1,6 +1,6 @@
-from mistral_inference.transformer import Transformer
-from mistral_inference.generate import generate
-from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
+# from mistral_inference.transformer import Transformer
+# from mistral_inference.generate import generate
+# from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
 from mistral_common.protocol.instruct.messages import UserMessage, SystemMessage, AssistantMessage
 from mistral_common.protocol.instruct.request import ChatCompletionRequest
 import time
@@ -10,11 +10,6 @@ from fastapi import FastAPI, HTTPException
 import uuid
 
 app = FastAPI(title="Mistral Local API")
-
-# Initialize Mistral components
-tokenizer = MistralTokenizer.from_file("/root/chesstral-llm-finetuning/mistral-finetune/mistral_model/tokenizer.model.v3")
-model = Transformer.from_folder("/root/chesstral-llm-finetuning/mistral-finetune/mistral_model")
-model.load_lora("/root/chesstral-llm-finetuning/mistral-finetune/runs/run2/checkpoints/checkpoint_000300/consolidated/lora.safetensors")
 
 class ChatMessage(BaseModel):
     role: str
@@ -35,8 +30,10 @@ class ChatCompletionRequestCustom(BaseModel):
 
 @app.post("/chat/completions")
 async def chat_completions(request: ChatCompletionRequestCustom):
-    try:
+        
+    # try:
 
+        # print (request.messages)
         messages = []
         for message in request.messages:
             if message.role == 'system':
@@ -51,23 +48,8 @@ async def chat_completions(request: ChatCompletionRequestCustom):
         print (completion_request)
         
         # Generate tokens
-        tokens = tokenizer.encode_chat_completion(completion_request).tokens
-        print (tokens)
-        out_tokens, _ = generate(
-            [tokens], 
-            model, 
-            max_tokens=request.max_tokens, 
-            temperature=request.temperature,
-            eos_id=tokenizer.instruct_tokenizer.tokenizer.eos_id
-        )
-        
-        # Decode response
-        result = tokenizer.instruct_tokenizer.tokenizer.decode(out_tokens[0])
-        
-        # Calculate token usage (simplified)
-        prompt_tokens = len(tokens)
-        completion_tokens = len(out_tokens[0])
-        total_tokens = prompt_tokens + completion_tokens
+        # tokens = tokenizer.encode_chat_completion(completion_request).tokens
+        # print (tokens)
         
         # Format response
         return {
@@ -78,19 +60,16 @@ async def chat_completions(request: ChatCompletionRequestCustom):
             "choices": [{
                 "message": {
                     "role": "assistant",
-                    "content": result
+                    "content": "result"
                 },
                 "index": 0,
                 "finish_reason": "stop"
             }],
             "usage": {
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-                "total_tokens": total_tokens
             }
         }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    # except Exception as e:
+    #     raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/")
 async def root():
@@ -98,6 +77,6 @@ async def root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8002)
 
     
