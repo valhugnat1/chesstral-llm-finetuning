@@ -38,6 +38,8 @@ async def chat_completions(request: ChatCompletionRequest):
     try:
         # Convert messages to Mistral format
         messages = [message.model_dump() for message in request.messages]
+        print (messages)
+        # messages = [UserMessage(content=message.content) for message in request.messages]
         completion_request = ChatCompletionRequest(messages=messages)
         
         # Generate tokens
